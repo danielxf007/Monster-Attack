@@ -1,0 +1,19 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/cells/0.png" type="Texture" id=1]
+[ext_resource path="res://assets/cells/1.png" type="Texture" id=2]
+[ext_resource path="res://assets/cells/2.png" type="Texture" id=3]
+[ext_resource path="res://board/cell/Cell.tscn" type="PackedScene" id=4]
+[ext_resource path="res://board/game_board.gd" type="Script" id=5]
+
+[node name="Main" type="Node"]
+
+[node name="GameBoard" type="Node2D" parent="."]
+script = ExtResource( 5 )
+_CELL_SCENE = ExtResource( 4 )
+_CELL_TEXTURES = [ ExtResource( 1 ), ExtResource( 2 ), ExtResource( 3 ) ]
+_START_POS = Vector2( 64, 64 )
+_CELL_DIM = Vector2( 64, 64 )
+_N_ROWS = 8
+_M_COLS = 9
+_CLICK_TIME_WAIT = 0.2
