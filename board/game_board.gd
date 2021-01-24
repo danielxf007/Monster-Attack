@@ -1,8 +1,6 @@
 extends "res://board/board.gd"
-
+signal selected(row, col)
 export(float) var _CLICK_TIME_WAIT: float
-const _SELECT_COLOR: String = "80ffffff"
-const _UNSELECT_COLOR: String = "ffffffff"
 var _cells_node: Node
 var _pieces_node: Node
 var _selected_cells: Array
@@ -42,21 +40,26 @@ func clear_pieces_node() -> void:
 		self._pieces_node.remove_child(child)
 		child.destroy()
 
-func add_cell(_pos: Vector2, _texture: Texture, _row: Array) -> void:
+func add_cell(_pos: Vector2, _texture: Texture, _row: Array, _i: int, _j:int) -> void:
 	var cell: Sprite =  self._CELL_SCENE.instance()
 	cell.texture = _texture
-	self._cells_node.add_child(cell)
+	cell.set_coord(_i, _j)
 	cell.global_position = _pos
+# warning-ignore:return_value_discarded
+	cell.connect("was_selected", self, "_on_Cell_was_selected")
+# warning-ignore:return_value_discarded
+	self.connect("selected", cell, "_on_GameBoard_selected")
+	self._cells_node.add_child(cell)
 	_row.append(cell)
 
 func add_cells() -> void:
 	var row: Array
 	var curr_pos: Vector2 = self._START_POS
 	var flag: bool = true
-	for _i in range(self._N_ROWS):
+	for i in range(self._N_ROWS):
 		row = []
-		for _j in range(self._M_COLS):
-			self.add_cell(curr_pos, self._CELL_TEXTURES[int(flag)], row)
+		for j in range(self._M_COLS):
+			self.add_cell(curr_pos, self._CELL_TEXTURES[int(flag)], row, i, j)
 			curr_pos.x += self._CELL_DIM.x
 			flag = not flag
 		self._cells.append(row)
@@ -76,13 +79,10 @@ func convert_to_board_coord(pos: Vector2) -> Array:
 func valid_coord(i: int, j: int) -> bool:
 	return i >= 0 and i < self._N_ROWS and j >= 0 and j < self._M_COLS
 
-func select_cell(i: int, j: int) -> void:
-	var cell: Sprite = self._cells[i][j]
+func _on_Cell_was_selected(cell: Sprite) -> void:
 	if not cell in self._selected_cells:
-		cell.change_color(self._SELECT_COLOR)
 		self._selected_cells.append(cell)
 	else:
-		cell.change_color(self._UNSELECT_COLOR)
 		self._selected_cells.erase(cell)
 
 func _input(event):
@@ -91,4 +91,4 @@ func _input(event):
 		if event.button_index == BUTTON_LEFT:
 			var coord: Array = self.convert_to_board_coord(event.position)
 			if self.valid_coord(coord[0], coord[1]):
-				self.select_cell(coord[0], coord[1])
+				self.emit_signal("selected", coord[0], coord[1])

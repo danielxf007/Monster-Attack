@@ -11,7 +11,7 @@ var _cells: Array
 func init() -> void:
 	pass
 
-func add_cell(_pos: Vector2, _texture: Texture, _row: Array) -> void:
+func add_cell(_pos: Vector2, _texture: Texture, _row: Array, _i: int, _j:int) -> void:
 	pass
 
 func add_cells() -> void:
